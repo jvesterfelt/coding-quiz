@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="UI-UX-Compatible" content="ie-edge" />
+    <title>Coding Quiz</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+</head>
+
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Web Development Coding Quiz</h1>
+            <nav>
+                <ul>
+                    <li>
+                        <a href="./highscores.html">High Scores</a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <div class="quiz-content">
+                <h2>Question #<span id="question-number"></span></h2>
+                <p id="question"></p>
+                <section id="responses" class="questions">
+                    <button type="submit" id="a" class="answer">1.<span id="a-text"></span></button>
+                    <button type="submit" id="b" class="answer">2.<span id="b-text"></span></button>
+                    <button type="submit" id="c" class="answer">3.<span id="c-text"></span></button>
+                    <button type="submit" id="d" class="answer">4.<span id="d-text"></span></button>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
