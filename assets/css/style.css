@@ -10,16 +10,21 @@ body {
 }
 
 header {
-    padding: 10px;
+    /* padding: 10px; */
     padding-top: 0;
     text-align: center;
     background-color: lightgrey;
+    width: 100%;
     margin: 0;
+    position: -webkit-sticky;
+    position: sticky;
+    z-index: 9999;
 }
 
 header h1 {
     font-family: Arial, Helvetica, sans-serif;
     text-decoration: none;
+    color: darkblue;
 }
 
 header nav {
@@ -29,8 +34,17 @@ header nav {
 header nav ul {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: flex-start;
     list-style: none;
+}
+
+header nav ul li a {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    color: darkblue;
+    text-decoration: none;
+    text-align: left;
+    justify-content: flex-start;
 }
 
 main {
@@ -59,4 +73,27 @@ main {
     margin: 2px;
     text-align: left;
     background-color: lightblue;
+}
+
+.scores {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list-winners {
+    width: 30%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: left;
+}
+
+.list-scores {
+    padding: 3px;
+    margin: 2px;
+    text-align: left;
 }
