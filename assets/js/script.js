@@ -10,7 +10,6 @@ var timeLeft = 30;
 var userScore = 0;
 var question = "";
 var initials = "";
-var currentPage = "";
 
 // Array variables
 var questions = [{
@@ -58,6 +57,12 @@ function reset() {
     var pageContent = document.getElementById("quiz");
     if (pageContent) {
         pageContent.innerHTML = "";
+        userScore = "";
+        initials = "";
+        topScores = "";
+        question = "";
+        timeLeft = 30;
+        questionNumber = 0;
         renderStartPage();
     }
 };
@@ -74,21 +79,26 @@ var renderStartPage = function(event) {
 
 
     var scoresBtn = document.getElementById("btnHighScore");
-    scoresBtn.querySelector("#btnHighScore");
-    scoresBtn.textContent = "High Scores";
-    scoresBtn.addEventListener("click", renderHighScorePage);
+    if (scoresBtn) {
+        scoresBtn.removeAttribute("id");
+        scoresBtn.textContent = "High Scores";
+        scoresBtn.addEventListener("click", renderHighScorePage);
+    }
 
     var startHeader = document.createElement("h2");
-    startHeader.innerText = "Click Start to Begin";
-    startHeader.setAttribute("id", "question-header");
+    if (startHeader) {
+        startHeader.innerText = "Click Start to Begin";
+        startHeader.setAttribute("id", "question-header");
+    }
 
     var startBtn = document.createElement("button");
-    startBtn.textContent = "START";
-    startBtn.setAttribute("id", "start");
-    startBtn.className = "btn";
-    startBtn.type = "button";
-    startBtn.querySelector("#start");
-    startBtn.addEventListener("click", renderQuizPage);
+    if (startBtn) {
+        startBtn.textContent = "START";
+        startBtn.setAttribute("id", "start");
+        startBtn.className = "btn";
+        startBtn.type = "button";
+        startBtn.addEventListener("click", renderQuizPage);
+    }
 
     var mainContent = document.getElementById("quiz");
     if (mainContent) {
@@ -97,6 +107,7 @@ var renderStartPage = function(event) {
         console.log("Rendered mainContent");
     }
 
+    return;
 };
 
 var renderQuizPage = function() {
@@ -104,29 +115,37 @@ var renderQuizPage = function() {
     hidePage();
 
     var questionHeader = document.createElement("h2");
-    questionHeader.setAttribute("id", "question-header");
-    questionHeader.textContent = "Question #" + questionNumber;
-    console.log(questionHeader);
+    if (questionHeader) {
+        questionHeader.setAttribute("id", "question-header");
+        // questionHeader.textContent = "Question #" + questionNumber;
+        console.log("questionHeader");
+    }
 
     var questionText = document.createElement("p");
-    questionText.setAttribute("id", "responses");
-    questionText.className = "questions";
-    questionText.textContent = questions[0].q;
-    console.log(questionText);
+    if (questionText) {
+        questionText.setAttribute("id", "responses");
+        questionText.className = "questions";
+        // questionText.textContent = "";
+        console.log("questionText");
+    }
 
     var btnTrue = document.createElement("button");
-    btnTrue.setAttribute("id", "true");
-    btnTrue.className = "answer";
-    btnTrue.setAttribute("type", "button");
-    btnTrue.textContent = "True";
-    console.log(btnTrue);
+    if (btnTrue) {
+        btnTrue.setAttribute("id", "true");
+        btnTrue.className = "answer";
+        btnTrue.setAttribute("type", "button");
+        btnTrue.textContent = "True";
+        console.log("btnTrue");
+    }
 
     var btnFalse = document.createElement("button");
-    btnFalse.setAttribute("id", "false");
-    btnFalse.className = "answer";
-    btnFalse.setAttribute("type", "button");
-    btnFalse.textContent = "False";
-    console.log(btnFalse);
+    if (btnFalse) {
+        btnFalse.setAttribute("id", "false");
+        btnFalse.className = "answer";
+        btnFalse.setAttribute("type", "button");
+        btnFalse.textContent = "False";
+        console.log("btnFalse");
+    }
 
     var mainContent = document.getElementById("quiz");
     if (mainContent) {
@@ -138,8 +157,10 @@ var renderQuizPage = function() {
     };
 
     var timer = document.createElement("span");
-    timer.setAttribute("id", "timer");
-    console.log(timer);
+    if (timer) {
+        timer.setAttribute("id", "timer");
+        console.log(timer);
+    }
 
     var timerDiv = document.getElementById("timer-div");
     if (timerDiv) {
@@ -169,6 +190,8 @@ var renderQuizPage = function() {
             renderStartPage();
         };
     });
+
+    return;
 };
 
 var renderInitialsInput = function(event) {
@@ -176,29 +199,35 @@ var renderInitialsInput = function(event) {
     hidePage();
 
     var pageHeader = document.createElement("h2");
-    pageHeader.setAttribute("id", "question-header");
-    pageHeader.textContent = "Enter your initials for your score rank:";
+    if (pageHeader) {
+        pageHeader.setAttribute("id", "question-header");
+        pageHeader.textContent = "Enter your initials for your score rank:";
+    }
 
     var textInput = document.createElement("input");
-    textInput.setAttribute("id", "userName");
-    textInput.setAttribute("placeholder", "Enter name or initials");
+    if (textInput) {
+        textInput.setAttribute("id", "userName");
+        textInput.setAttribute("placeholder", "Enter name or initials");
+    }
 
     var btnSubmit = document.createElement("button");
-    btnSubmit.setAttribute("id", "submitName");
-    btnSubmit.className = "btn";
-    btnSubmit.textContent = "Submit";
-    btnSubmit.setAttribute("type", "button");
-    btnSubmit.querySelector("#submitName");
-    btnSubmit.addEventListener("click", function() {
-        var initials = textInput.value;
-        console.log(initials);
-        if (initials) {
-            textInput.value = "";
-            renderHighScorePage();
-        } else {
-            alert("Please enter name or initials, or click High Scores");
-        }
-    });
+    if (btnSubmit) {
+        btnSubmit.setAttribute("id", "submitName");
+        btnSubmit.className = "btn";
+        btnSubmit.textContent = "Submit";
+        btnSubmit.setAttribute("type", "button");
+        btnSubmit.querySelector("#submitName");
+        btnSubmit.addEventListener("click", function() {
+            var initials = textInput.value;
+            console.log(initials);
+            if (initials) {
+                textInput.value = "";
+                renderHighScorePage();
+            } else {
+                alert("Please enter name or initials, or click High Scores");
+            }
+        });
+    }
 
     var mainContent = document.getElementById("quiz");
     if (mainContent) {
@@ -212,22 +241,30 @@ var renderInitialsInput = function(event) {
     var scoresBtn = document.querySelector("#btnHighScore");
     scoresBtn.addEventListener("click", renderHighScorePage);
 
+    return;
 };
 
 var renderHighScorePage = function() {
     hidePage();
-    removeTimer();
+    // removeTimer();
+    console.log("high scores")
 
     var homeBtn = document.querySelector("#btnHighScore");
-    homeBtn.textContent = "Home";
-    homeBtn.addEventListener("click", renderStartPage);
+    if (homeBtn) {
+        homeBtn.textContent = "Home";
+        homeBtn.addEventListener("click", renderStartPage);
+    }
 
     var listHeader = document.createElement("h2");
-    listHeader.setAttribute("id", "question-header");
-    listHeader.textContent = "Top Scores: ";
+    if (listHeader) {
+        listHeader.setAttribute("id", "question-header");
+        listHeader.textContent = "Top Scores: ";
+    }
 
     var listScores = document.createElement("ol");
-    listScores.setAttribute("id", "list");
+    if (listScores) {
+        listScores.setAttribute("id", "list");
+    }
 
     var mainContent = document.getElementById("quiz");
     if (mainContent) {
@@ -275,6 +312,7 @@ var renderHighScorePage = function() {
         listScores.appendChild(noScores);
         console.log("top scores else portion");
     };
+    return;
 };
 
 
