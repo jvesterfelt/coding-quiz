@@ -1,12 +1,8 @@
 // Declare variables
-var startBtn = document.querySelector("#start");
-var homeBtn = document.querySelector("#home");
-var scoresBtn = document.querySelector("#btnHighScore");
 var stopBtn = document.querySelector("#stop");
 var btnTrue = document.querySelector("#true");
 var btnFalse = document.querySelector("#false");
 var btnSubmit = document.querySelector("#submitName");
-
 var mainContent = document.getElementById("quiz");
 
 var questionNumber = 0;
@@ -39,27 +35,9 @@ var questions = [{
     }
 ];
 
-var topScores = [{
-        name: "",
-        score: 0,
-    },
-    {
-        name: "",
-        score: 0,
-    },
-    {
-        name: "",
-        score: 0,
-    },
-    {
-        name: "",
-        score: 0,
-    },
-    {
-        name: "",
-        score: 0,
-    }
-];
+var storedScores = [{}];
+var topScores = [{}];
+
 // Declared Functions
 function hidePage() {
     var pageContent = document.getElementById("quiz");
@@ -82,39 +60,47 @@ function reset() {
         pageContent.innerHTML = "";
         renderStartPage();
     }
-}
+};
+
+
 
 
 // Function Expressions:
 
 var renderStartPage = function(event) {
-    event.preventDefault();
+    console.log("started renderStartPage")
     removeTimer();
+    hidePage();
+
+
+    var scoresBtn = document.getElementById("btnHighScore");
+    scoresBtn.querySelector("#btnHighScore");
+    scoresBtn.textContent = "High Scores";
+    scoresBtn.addEventListener("click", renderHighScorePage);
 
     var startHeader = document.createElement("h2");
     startHeader.innerText = "Click Start to Begin";
     startHeader.setAttribute("id", "question-header");
-    console.log(startHeader);
 
     var startBtn = document.createElement("button");
     startBtn.textContent = "START";
     startBtn.setAttribute("id", "start");
     startBtn.className = "btn";
     startBtn.type = "button";
-    console.log(startBtn);
+    startBtn.querySelector("#start");
+    startBtn.addEventListener("click", renderQuizPage);
 
     var mainContent = document.getElementById("quiz");
     if (mainContent) {
         mainContent.appendChild(startHeader);
         mainContent.appendChild(startBtn);
-        console.log("Rendered highStartPage")
+        console.log("Rendered mainContent");
     }
 
-    var scoresBtn = document.addEventListener("click", renderHighScorePage);
 };
 
-var renderQuizPage = function(event) {
-    // event.preventDefault();
+var renderQuizPage = function() {
+
     hidePage();
 
     var questionHeader = document.createElement("h2");
@@ -142,12 +128,6 @@ var renderQuizPage = function(event) {
     btnFalse.textContent = "False";
     console.log(btnFalse);
 
-    var timer = document.createElement("span");
-    timer.setAttribute("id", "timer");
-    console.log(timer);
-
-
-
     var mainContent = document.getElementById("quiz");
     if (mainContent) {
         mainContent.appendChild(questionHeader)
@@ -155,33 +135,45 @@ var renderQuizPage = function(event) {
         mainContent.appendChild(btnTrue);
         mainContent.appendChild(btnFalse);
         console.log("rendered quizPage")
-    }
+    };
+
+    var timer = document.createElement("span");
+    timer.setAttribute("id", "timer");
+    console.log(timer);
+
     var timerDiv = document.getElementById("timer-div");
     if (timerDiv) {
         timerDiv.appendChild(timer);
-    }
+    };
 
     function countdown() {
         if (timeLeft === 0) {
             clearTimeout(timerId);
             timer.textContent = "Time Remaining: 0"
             console.log(timeLeft);
-            hidePage();
             console.log("removed children'hideQuizPage'");
             renderInitialsInput();
         } else {
-            timeLeft--;
             timer.textContent = "Time Remaining: " + timeLeft;
         }
+        timeLeft--;
     };
-    var timerId = setInterval(countdown, 10);
+    var timerId = setInterval(countdown, 1000);
 
-    var scoresBtn = document.addEventListener("click", renderHighScorePage);
-    var stopBtn = document.addEventListener("click", renderStartPage);
+    var stopBtn = document.querySelector("#btnHighScore");
+    stopBtn.textContent = "Stop Quiz";
+    stopBtn.addEventListener("click", function() {
+        if (stopBtn) {
+            console.log("clearing timer");
+            clearTimeout(timerId);
+            renderStartPage();
+        };
+    });
 };
 
 var renderInitialsInput = function(event) {
     removeTimer();
+    hidePage();
 
     var pageHeader = document.createElement("h2");
     pageHeader.setAttribute("id", "question-header");
@@ -196,6 +188,17 @@ var renderInitialsInput = function(event) {
     btnSubmit.className = "btn";
     btnSubmit.textContent = "Submit";
     btnSubmit.setAttribute("type", "button");
+    btnSubmit.querySelector("#submitName");
+    btnSubmit.addEventListener("click", function() {
+        var initials = textInput.value;
+        console.log(initials);
+        if (initials) {
+            textInput.value = "";
+            renderHighScorePage();
+        } else {
+            alert("Please enter name or initials, or click High Scores");
+        }
+    });
 
     var mainContent = document.getElementById("quiz");
     if (mainContent) {
@@ -205,72 +208,81 @@ var renderInitialsInput = function(event) {
         console.log("rendered initialsPage")
     }
 
-    var btnSubmit = document.addEventListener("click", function() {
-        initials = document.querySelector("input[id='userName']").value;
-        if (initials) {
-            topScores = {
-                name: initials,
-                score: userScore,
-            }
-        }
-    });
-    var scoresBtn = document.addEventListener("click", renderHighScorePage);
+    console.log("reached the end of initials")
+    var scoresBtn = document.querySelector("#btnHighScore");
+    scoresBtn.addEventListener("click", renderHighScorePage);
 
 };
 
 var renderHighScorePage = function() {
-    // hidePage();
+    hidePage();
     removeTimer();
+
+    var homeBtn = document.querySelector("#btnHighScore");
+    homeBtn.textContent = "Home";
+    homeBtn.addEventListener("click", renderStartPage);
 
     var listHeader = document.createElement("h2");
     listHeader.setAttribute("id", "question-header");
-    listHeader.textContent = "Top Scores:";
+    listHeader.textContent = "Top Scores: ";
 
     var listScores = document.createElement("ol");
     listScores.setAttribute("id", "list");
 
-    var listRank1 = document.createElement("li");
-    listRank1.setAttribute("id", "list-item-1");
-    listRank1.className = "list-item";
-
-    var listRank2 = document.createElement("li");
-    listRank2.setAttribute("id", "list-item-2");
-    listRank2.className = "list-item";
-
-    var listRank3 = document.createElement("li");
-    listRank3.setAttribute("id", "list-item-3");
-    listRank3.className = "list-item";
-
-    var listRank4 = document.createElement("li");
-    listRank4.setAttribute("id", "list-item-4");
-    listRank4.className = "list-item";
-
-    var listRank5 = document.createElement("li");
-    listRank5.setAttribute("id", "list-item-5");
-    listRank5.className = "list-item";
-
-    listScores.appendChild(listRank1);
-    listScores.appendChild(listRank2);
-    listScores.appendChild(listRank3);
-    listScores.appendChild(listRank4);
-    listScores.appendChild(listRank5);
-
     var mainContent = document.getElementById("quiz");
-    mainContent.appendChild(listHeader);
-    mainContent.appendChild(listScores);
+    if (mainContent) {
+        mainContent.appendChild(listHeader);
+        mainContent.appendChild(listScores);
+    };
 
-    var homeBtn = document.getElementById("btnHighScore");
-    homeBtn.textContent = "Home";
-    homeBtn.addEventListener("click", renderStartPage);
+    // var listRank1 = document.createElement("li");
+    // listRank1.setAttribute("id", "list-item-1");
+    // listRank1.className = "list-item";
 
+    // var listRank2 = document.createElement("li");
+    // listRank2.setAttribute("id", "list-item-2");
+    // listRank2.className = "list-item";
+
+    // var listRank3 = document.createElement("li");
+    // listRank3.setAttribute("id", "list-item-3");
+    // listRank3.className = "list-item";
+
+    // var listRank4 = document.createElement("li");
+    // listRank4.setAttribute("id", "list-item-4");
+    // listRank4.className = "list-item";
+
+    // var listRank5 = document.createElement("li");
+    // listRank5.setAttribute("id", "list-item-5");
+    // listRank5.className = "list-item";
+    topScores = JSON.parse(window.localStorage.getItem('storedScores'));
+
+    if (topScores) {
+        for (var i = 0; i < topScores.length; i++) {
+            var listRank = document.createElement("li");
+            listRank.setAttribute("id", [i] + 1);
+            listRank.className = "list-item";
+            if (listRank) {
+                listRank[i].textContent = topScores.name + " score: " + topScores.score;
+                listScores.appendChild(listRank[i] + 1);
+                console.log("top scores if portion");
+            }
+        };
+    } else {
+        var noScores = document.createElement("p");
+        noScores.setAttribute("id", "noScores");
+        noScores.className = "list-item";
+        noScores.textContent = "No scores stored.";
+        listScores.appendChild(noScores);
+        console.log("top scores else portion");
+    };
 };
 
 
-var startBtn = document.addEventListener("click", renderQuizPage);
-var homeBtn = document.addEventListener("click", renderStartPage);
-var scoresBtn = document.addEventListener("click", renderHighScorePage);
+// var startBtn = document.addEventListener("click", renderQuizPage);
+// var homeBtn = document.addEventListener("click", renderStartPage);
+// var scoresBtn = document.addEventListener("click", renderHighScorePage);
 
-// renderStartPage();
-renderQuizPage();
+renderStartPage();
+// renderQuizPage();
 // renderInitialsInput();
 // renderHighScorePage();
