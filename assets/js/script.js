@@ -47,8 +47,10 @@ var navButton = function() {
         navBtn.removeEventListener("click", renderHighScorePage);
         navBtn.textContent = "Stop Quiz";
         navBtn.addEventListener("click", function() {
-            clearInterval(timerId);
+            clearInterval(window.timerId);
+            console.log("cleared timer ", window.timerId, timeLeft);
             timeLeft = 30;
+            console.log("timeLeft reset ", timeLeft);
             renderInitialsInput();
         });
     } else {
@@ -314,7 +316,8 @@ var quizTimer = function() {
 
     function countdown() {
         if (timeLeft <= 0) {
-            clearTimeout(timerId);
+            clearTimeout(window.timerId);
+            console.log("timer cleared", window.timerid, timeLeft);
             timer.textContent = "Time Remaining: 0"
             renderInitialsInput();
         } else {
@@ -322,7 +325,7 @@ var quizTimer = function() {
         }
         timeLeft--;
     };
-    var timerId = setInterval(countdown, 1000);
+    window.timerId = setInterval(countdown, 1000);
 };
 
 
