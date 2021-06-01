@@ -1,41 +1,18 @@
 // Declare variables
-var stopBtn = document.querySelector("#stop");
-var btnTrue = document.querySelector("#true");
-var btnFalse = document.querySelector("#false");
 var btnSubmit = document.querySelector("#submitName");
 var mainContent = document.getElementById("quiz");
 
+var timerId = "";
 var questionNumber = 0;
+var userResponse = "";
 var timeLeft = 30;
 var userScore = 0;
 var question = "";
 var initials = "";
+var curPage = "";
+var topScores = [];
+var tempTopScores = [];
 
-// Array variables
-var questions = [{
-        q: "Array content is placed within brackets.",
-        a: true
-    },
-    {
-        q: "Object elements are placed within curly brackets.",
-        a: true
-    },
-    {
-        q: "Elements of arrays and objects are delimited with a semicolon.",
-        a: false
-    },
-    {
-        q: "The function name is omitted from the function expression and creates an anonymous function.",
-        a: true
-    },
-    {
-        q: "Javascript uses is a programming language.",
-        a: false
-    }
-];
-
-var storedScores = [{}];
-var topScores = [{}];
 
 // Declared Functions
 function hidePage() {
@@ -43,7 +20,6 @@ function hidePage() {
     if (pageContent) {
         pageContent.innerHTML = "";
     }
-    return;
 };
 
 function removeTimer() {
@@ -67,23 +43,62 @@ function reset() {
     }
 };
 
+var navButton = function() {
+    var navBtn = document.querySelector("#btnHighScore");
 
+    if (curPage === "high-score" || curPage === "initials") {
+        navBtn.removeEventListener("click", renderHighScorePage);
+        navBtn.removeEventListener("click", renderInitialsInput);
+        navBtn.textContent = "Home";
+        navBtn.addEventListener("click", renderStartPage);
+    } else if (curPage === "quiz") {
+        navBtn.removeEventListener("click", renderStartPage);
+        navBtn.removeEventListener("click", renderHighScorePage);
+        navBtn.textContent = "Stop Quiz";
+        navBtn.addEventListener("click", function() {
+            clearInterval();
+            timeLeft = 30;
+            renderInitialsInput();
+        });
+    } else {
+        if (navBtn) {
+            navBtn.removeEventListener("click", renderStartPage);
+            navBtn.removeEventListener("click", renderInitialsInput);
+            navBtn.textContent = "High Scores";
+            navBtn.addEventListener("click", renderHighScorePage);
+        }
+    }
+};
 
+var scoresList = function(listScores) {
+    topScores = JSON.parse(window.localStorage.getItem('topScores'));
+
+    if (topScores) {
+        console.log("scores");
+        for (var i = 0; i < topScores.length; i++) {
+            var listRank = document.createElement("li");
+            listRank.setAttribute("id", [i]);
+            listRank.className = "list-item";
+            if (listRank) {
+                listRank.textContent = "Name: " + topScores[i].Name + " Score: " + topScores[i].Score;
+                listScores.appendChild(listRank);
+            }
+        };
+    } else {
+        var noScores = document.createElement("p");
+        noScores.setAttribute("id", "noScores");
+        noScores.className = "list-item";
+        noScores.textContent = "No scores stored.";
+        listScores.appendChild(noScores);
+    };
+};
 
 // Function Expressions:
-
 var renderStartPage = function(event) {
-    console.log("started renderStartPage")
+    curPage = "start";
     removeTimer();
     hidePage();
-
-
-    var scoresBtn = document.getElementById("btnHighScore");
-    if (scoresBtn) {
-        scoresBtn.removeAttribute("id");
-        scoresBtn.textContent = "High Scores";
-        scoresBtn.addEventListener("click", renderHighScorePage);
-    }
+    navButton();
 
     var startHeader = document.createElement("h2");
     if (startHeader) {
@@ -104,20 +119,42 @@ var renderStartPage = function(event) {
     if (mainContent) {
         mainContent.appendChild(startHeader);
         mainContent.appendChild(startBtn);
-        console.log("Rendered mainContent");
     }
-
-    return;
 };
 
 var renderQuizPage = function() {
+    var i = 0;
+    curPage = "quiz";
+    var questions = [{
+            q: "Array content is placed within brackets.",
+            a: true
+        },
+        {
+            q: "Object elements are placed within curly brackets.",
+            a: true
+        },
+        {
+            q: "Elements of arrays and objects are delimited with a semicolon.",
+            a: false
+        },
+        {
+            q: "The function name is omitted from the function expression and creates an anonymous function.",
+            a: true
+        },
+        {
+            q: "Javascript is a programming language.",
+            a: false
+        }
+    ];
 
     hidePage();
+    navButton();
+    quizTimer();
+
 
     var questionHeader = document.createElement("h2");
     if (questionHeader) {
         questionHeader.setAttribute("id", "question-header");
-        // questionHeader.textContent = "Question #" + questionNumber;
         console.log("questionHeader");
     }
 
@@ -125,78 +162,66 @@ var renderQuizPage = function() {
     if (questionText) {
         questionText.setAttribute("id", "responses");
         questionText.className = "questions";
-        // questionText.textContent = "";
         console.log("questionText");
-    }
-
-    var btnTrue = document.createElement("button");
-    if (btnTrue) {
-        btnTrue.setAttribute("id", "true");
-        btnTrue.className = "answer";
-        btnTrue.setAttribute("type", "button");
-        btnTrue.textContent = "True";
-        console.log("btnTrue");
-    }
-
-    var btnFalse = document.createElement("button");
-    if (btnFalse) {
-        btnFalse.setAttribute("id", "false");
-        btnFalse.className = "answer";
-        btnFalse.setAttribute("type", "button");
-        btnFalse.textContent = "False";
-        console.log("btnFalse");
     }
 
     var mainContent = document.getElementById("quiz");
     if (mainContent) {
         mainContent.appendChild(questionHeader)
         mainContent.appendChild(questionText);
-        mainContent.appendChild(btnTrue);
-        mainContent.appendChild(btnFalse);
-        console.log("rendered quizPage")
     };
 
-    var timer = document.createElement("span");
-    if (timer) {
-        timer.setAttribute("id", "timer");
-        console.log(timer);
-    }
-
-    var timerDiv = document.getElementById("timer-div");
-    if (timerDiv) {
-        timerDiv.appendChild(timer);
-    };
-
-    function countdown() {
-        if (timeLeft === 0) {
-            clearTimeout(timerId);
-            timer.textContent = "Time Remaining: 0"
-            console.log(timeLeft);
-            console.log("removed children'hideQuizPage'");
-            renderInitialsInput();
+    var btnTrue = document.createElement("button");
+    btnTrue.setAttribute("id", "true");
+    btnTrue.className = "answer";
+    btnTrue.setAttribute("type", "button");
+    btnTrue.textContent = "True";
+    btnTrue.addEventListener("click", function() {
+        userResponse = true;
+        console.log("user response: ", userResponse);
+        if (userResponse === questions[i].a) {
+            userScore = userScore + 10;
         } else {
-            timer.textContent = "Time Remaining: " + timeLeft;
+            timeLeft = timeLeft - 5;
         }
-        timeLeft--;
-    };
-    var timerId = setInterval(countdown, 1000);
-
-    var stopBtn = document.querySelector("#btnHighScore");
-    stopBtn.textContent = "Stop Quiz";
-    stopBtn.addEventListener("click", function() {
-        if (stopBtn) {
-            console.log("clearing timer");
-            clearTimeout(timerId);
-            renderStartPage();
-        };
+        console.log("userScore", userScore);
+        i++;
     });
 
-    return;
+    var btnFalse = document.createElement("button");
+    btnFalse.setAttribute("id", "false");
+    btnFalse.className = "answer";
+    btnFalse.setAttribute("type", "button");
+    btnFalse.textContent = "False";
+    btnFalse.addEventListener("click", function() {
+        userResponse = false;
+        console.log("user response ", userResponse);
+        if (userResponse === questions[i].a) {
+            userScore = userScore + 10;
+        } else {
+            timeLeft = timeLeft - 5;
+        }
+        console.log("userScore", userScore);
+        i++;
+    });
+
+
+    questionHeader.textContent = "Question #" + (i + 1) + ":";
+    questionText.textContent = questions[i].q;
+
+    mainContent.appendChild(questionHeader);
+    mainContent.appendChild(questionText);
+    mainContent.appendChild(btnTrue);
+    mainContent.appendChild(btnFalse);
+
+    startQuiz();
 };
 
-var renderInitialsInput = function(event) {
+var renderInitialsInput = function() {
+    curPage = "initials";
     removeTimer();
     hidePage();
+    navButton();
 
     var pageHeader = document.createElement("h2");
     if (pageHeader) {
@@ -219,13 +244,18 @@ var renderInitialsInput = function(event) {
         btnSubmit.querySelector("#submitName");
         btnSubmit.addEventListener("click", function() {
             var initials = textInput.value;
-            console.log(initials);
             if (initials) {
-                textInput.value = "";
+                tempTopScores.push({ Name: initials, Score: userScore });
+                tempTopScores.sort(function(a, b) {
+                    return b.Score - a.Score;
+                });
+                topScores = tempTopScores.slice(0, 5);
+                localStorage.setItem("topScores", JSON.stringify(topScores));
                 renderHighScorePage();
             } else {
                 alert("Please enter name or initials, or click High Scores");
             }
+            // reset();
         });
     }
 
@@ -234,26 +264,15 @@ var renderInitialsInput = function(event) {
         mainContent.appendChild(pageHeader);
         mainContent.appendChild(textInput);
         mainContent.appendChild(btnSubmit);
-        console.log("rendered initialsPage")
     }
-
-    console.log("reached the end of initials")
-    var scoresBtn = document.querySelector("#btnHighScore");
-    scoresBtn.addEventListener("click", renderHighScorePage);
-
-    return;
 };
 
 var renderHighScorePage = function() {
     hidePage();
-    // removeTimer();
-    console.log("high scores")
+    removeTimer();
+    curPage = "high-score";
+    navButton();
 
-    var homeBtn = document.querySelector("#btnHighScore");
-    if (homeBtn) {
-        homeBtn.textContent = "Home";
-        homeBtn.addEventListener("click", renderStartPage);
-    }
 
     var listHeader = document.createElement("h2");
     if (listHeader) {
@@ -272,55 +291,57 @@ var renderHighScorePage = function() {
         mainContent.appendChild(listScores);
     };
 
-    // var listRank1 = document.createElement("li");
-    // listRank1.setAttribute("id", "list-item-1");
-    // listRank1.className = "list-item";
-
-    // var listRank2 = document.createElement("li");
-    // listRank2.setAttribute("id", "list-item-2");
-    // listRank2.className = "list-item";
-
-    // var listRank3 = document.createElement("li");
-    // listRank3.setAttribute("id", "list-item-3");
-    // listRank3.className = "list-item";
-
-    // var listRank4 = document.createElement("li");
-    // listRank4.setAttribute("id", "list-item-4");
-    // listRank4.className = "list-item";
-
-    // var listRank5 = document.createElement("li");
-    // listRank5.setAttribute("id", "list-item-5");
-    // listRank5.className = "list-item";
-    topScores = JSON.parse(window.localStorage.getItem('storedScores'));
-
-    if (topScores) {
-        for (var i = 0; i < topScores.length; i++) {
-            var listRank = document.createElement("li");
-            listRank.setAttribute("id", [i] + 1);
-            listRank.className = "list-item";
-            if (listRank) {
-                listRank[i].textContent = topScores.name + " score: " + topScores.score;
-                listScores.appendChild(listRank[i] + 1);
-                console.log("top scores if portion");
-            }
-        };
-    } else {
-        var noScores = document.createElement("p");
-        noScores.setAttribute("id", "noScores");
-        noScores.className = "list-item";
-        noScores.textContent = "No scores stored.";
-        listScores.appendChild(noScores);
-        console.log("top scores else portion");
-    };
-    return;
+    scoresList(listScores);
 };
 
+var quizTimer = function() {
+    var timer = document.createElement("span");
+    if (timer) {
+        timer.setAttribute("id", "timer");
+    }
 
-// var startBtn = document.addEventListener("click", renderQuizPage);
-// var homeBtn = document.addEventListener("click", renderStartPage);
-// var scoresBtn = document.addEventListener("click", renderHighScorePage);
+    var timerDiv = document.getElementById("timer-div");
+    if (timerDiv) {
+        timerDiv.appendChild(timer);
+    };
+
+    function countdown() {
+        if (timeLeft === 0) {
+            clearTimeout(timerId);
+            timer.textContent = "Time Remaining: 0"
+            renderInitialsInput();
+        } else {
+            timer.textContent = "Time Remaining: " + timeLeft;
+        }
+        timeLeft--;
+    };
+    var timerId = setInterval(countdown, 1000);
+};
+
+var startQuiz = function() {
+    var questions = [{
+            q: "Array content is placed within brackets.",
+            a: true
+        },
+        {
+            q: "Object elements are placed within curly brackets.",
+            a: true
+        },
+        {
+            q: "Elements of arrays and objects are delimited with a semicolon.",
+            a: false
+        },
+        {
+            q: "The function name is omitted from the function expression and creates an anonymous function.",
+            a: true
+        },
+        {
+            q: "Javascript is a programming language.",
+            a: false
+        }
+    ];
+
+    questions.forEach(function() {});
+};
 
 renderStartPage();
-// renderQuizPage();
-// renderInitialsInput();
-// renderHighScorePage();
