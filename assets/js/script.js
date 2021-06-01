@@ -1,13 +1,11 @@
-// Declare variables
-var btnSubmit = document.querySelector("#submitName");
+// Set mainContent
 var mainContent = document.getElementById("quiz");
 
-var timerId = "";
-var questionNumber = 0;
+
+// Declare variables
 var userResponse = "";
 var timeLeft = 30;
 var userScore = 0;
-var question = "";
 var initials = "";
 var curPage = "";
 var topScores = [];
@@ -30,17 +28,10 @@ function removeTimer() {
 };
 
 function reset() {
-    var pageContent = document.getElementById("quiz");
-    if (pageContent) {
-        pageContent.innerHTML = "";
-        userScore = "";
-        initials = "";
-        topScores = "";
-        question = "";
-        timeLeft = 30;
-        questionNumber = 0;
-        renderStartPage();
-    }
+    userScore = 0;
+    initials = "";
+    topScores = [];
+    timeLeft = 30;
 };
 
 var navButton = function() {
@@ -56,7 +47,7 @@ var navButton = function() {
         navBtn.removeEventListener("click", renderHighScorePage);
         navBtn.textContent = "Stop Quiz";
         navBtn.addEventListener("click", function() {
-            clearInterval();
+            clearInterval(timerId);
             timeLeft = 30;
             renderInitialsInput();
         });
@@ -98,6 +89,7 @@ var renderStartPage = function(event) {
     curPage = "start";
     removeTimer();
     hidePage();
+    reset();
     navButton();
 
     var startHeader = document.createElement("h2");
@@ -125,6 +117,11 @@ var renderStartPage = function(event) {
 var renderQuizPage = function() {
     var i = 0;
     curPage = "quiz";
+
+    hidePage();
+    navButton();
+    quizTimer();
+
     var questions = [{
             q: "Array content is placed within brackets.",
             a: true
@@ -147,11 +144,6 @@ var renderQuizPage = function() {
         }
     ];
 
-    hidePage();
-    navButton();
-    quizTimer();
-
-
     var questionHeader = document.createElement("h2");
     if (questionHeader) {
         questionHeader.setAttribute("id", "question-header");
@@ -171,6 +163,11 @@ var renderQuizPage = function() {
         mainContent.appendChild(questionText);
     };
 
+
+    questionHeader.textContent = "Question #" + (i + 1) + ":";
+    questionText.textContent = questions[i].q;
+
+
     var btnTrue = document.createElement("button");
     btnTrue.setAttribute("id", "true");
     btnTrue.className = "answer";
@@ -184,8 +181,15 @@ var renderQuizPage = function() {
         } else {
             timeLeft = timeLeft - 5;
         }
-        console.log("userScore", userScore);
-        i++;
+        if (i < 4) {
+            console.log("userScore", userScore, i);
+            i++;
+            questionHeader.textContent = "Question #" + (i + 1) + ":";
+            questionText.textContent = questions[i].q;
+        } else {
+
+            renderInitialsInput();
+        }
     });
 
     var btnFalse = document.createElement("button");
@@ -195,26 +199,27 @@ var renderQuizPage = function() {
     btnFalse.textContent = "False";
     btnFalse.addEventListener("click", function() {
         userResponse = false;
-        console.log("user response ", userResponse);
+        console.log("user response ", userResponse, i);
         if (userResponse === questions[i].a) {
             userScore = userScore + 10;
         } else {
             timeLeft = timeLeft - 5;
         }
-        console.log("userScore", userScore);
-        i++;
+        if (i < 4) {
+            console.log("userScore", userScore, i);
+            i++;
+            questionHeader.textContent = "Question #" + (i + 1) + ":";
+            questionText.textContent = questions[i].q;
+        } else {
+
+            renderInitialsInput();
+        }
     });
-
-
-    questionHeader.textContent = "Question #" + (i + 1) + ":";
-    questionText.textContent = questions[i].q;
 
     mainContent.appendChild(questionHeader);
     mainContent.appendChild(questionText);
     mainContent.appendChild(btnTrue);
     mainContent.appendChild(btnFalse);
-
-    startQuiz();
 };
 
 var renderInitialsInput = function() {
@@ -247,6 +252,7 @@ var renderInitialsInput = function() {
             if (initials) {
                 tempTopScores.push({ Name: initials, Score: userScore });
                 tempTopScores.sort(function(a, b) {
+                    reset();
                     return b.Score - a.Score;
                 });
                 topScores = tempTopScores.slice(0, 5);
@@ -255,7 +261,6 @@ var renderInitialsInput = function() {
             } else {
                 alert("Please enter name or initials, or click High Scores");
             }
-            // reset();
         });
     }
 
@@ -268,9 +273,11 @@ var renderInitialsInput = function() {
 };
 
 var renderHighScorePage = function() {
+    curPage = "high-score";
+
     hidePage();
     removeTimer();
-    curPage = "high-score";
+    reset();
     navButton();
 
 
@@ -306,7 +313,7 @@ var quizTimer = function() {
     };
 
     function countdown() {
-        if (timeLeft === 0) {
+        if (timeLeft <= 0) {
             clearTimeout(timerId);
             timer.textContent = "Time Remaining: 0"
             renderInitialsInput();
@@ -318,30 +325,5 @@ var quizTimer = function() {
     var timerId = setInterval(countdown, 1000);
 };
 
-var startQuiz = function() {
-    var questions = [{
-            q: "Array content is placed within brackets.",
-            a: true
-        },
-        {
-            q: "Object elements are placed within curly brackets.",
-            a: true
-        },
-        {
-            q: "Elements of arrays and objects are delimited with a semicolon.",
-            a: false
-        },
-        {
-            q: "The function name is omitted from the function expression and creates an anonymous function.",
-            a: true
-        },
-        {
-            q: "Javascript is a programming language.",
-            a: false
-        }
-    ];
-
-    questions.forEach(function() {});
-};
 
 renderStartPage();
