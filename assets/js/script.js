@@ -34,6 +34,7 @@ function reset() {
     timeLeft = 30;
 };
 
+// Create and set persistent nav button
 var navButton = function() {
     var navBtn = document.querySelector("#btnHighScore");
 
